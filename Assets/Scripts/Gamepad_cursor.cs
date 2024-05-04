@@ -48,7 +48,9 @@ public class NewBehaviourScript : MonoBehaviour
 
     private void OnDisable()
     {
+        InputSystem.RemoveDevice(virtualMouse);
         InputSystem.onAfterUpdate -= UpdateMotion;
+        //playerInput.onControlsChanged -= OnControlsChanged;
     }
 
     private void UpdateMotion()
