@@ -8,7 +8,7 @@ using UnityEngine;
 public class Question_manager : MonoBehaviour
 {
     
-    private string urlDataBase = "URI=file: C:/Users/fabio/OneDrive/Documentos/GitHub/Amazon-Hacking-AWA/Awa.dbAwa.db";
+    private string urlDataBase = "URI=file:C:/Users/fabio/OneDrive/Documentos/GitHub/Amazon-Hacking-AWA/Assets/Awa.db";
     private SqliteConnection connection;
 
     public TMP_Text question;
@@ -32,6 +32,7 @@ public class Question_manager : MonoBehaviour
 
     public void test_text(string text){
         question.SetText($"{text}");
+        
     }
 
     /*public void loadData(){
@@ -49,7 +50,7 @@ public class Question_manager : MonoBehaviour
         var reader = command.ExecuteReader();
         while (reader.Read())
         {
-            Debug.Log($"history: {reader["fase_texto"]}, nome: {reader["historia_texto"]}");
+            Debug.Log($"history: {reader["historia_texto"]}, nome: {reader["fase_texto"]}");
         }
     }
 
