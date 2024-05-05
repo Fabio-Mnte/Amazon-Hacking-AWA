@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,15 +19,25 @@ public class LoadingManager : MonoBehaviour
     IEnumerator LoadGameScene(string sceneName)
     {
         AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(sceneName);
+        asyncOperation.allowSceneActivation = false;
 
-        while (!asyncOperation.isDone)
+        float progress = 0f;
+        while (progress < 1f)
         {
+            progress = Mathf.Lerp(progress, asyncOperation.progress < 0.9f ? asyncOperation.progress : 1f, Time.deltaTime * 5);
             if (loadingSlider != null)
             {
-                loadingSlider.value = asyncOperation.progress;
+                loadingSlider.value = progress;
             }
+
+            // Se o progresso estiver completo e a cena ainda não estiver ativada, ative a cena
+            if (progress >= 0.999f && !asyncOperation.allowSceneActivation)
+            {
+                asyncOperation.allowSceneActivation = true;
+            }
+
             yield return null;
         }
-
     }
+
 }
