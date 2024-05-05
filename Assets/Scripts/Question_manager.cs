@@ -8,7 +8,7 @@ using UnityEngine;
 public class Question_manager : MonoBehaviour
 {
     
-    private string urlDataBase = "URI=file:C:/Users/fabio/OneDrive/Documentos/GitHub/Amazon-Hacking-AWA/Assets/Awa.db";
+    private string urlDataBase = "URI=file:Assets/Awa.db";
     private SqliteConnection connection;
 
     public TMP_Text question;
@@ -22,12 +22,17 @@ public class Question_manager : MonoBehaviour
     {
         OpenConnection();
         //loadData();
+        CloseConnection();
     }
 
     private void OpenConnection()
     {
         connection = new SqliteConnection(urlDataBase);
         connection.Open();
+    }
+    private void CloseConnection()
+    {
+        connection.Close();
     }
 
     public void test_text(string text){
