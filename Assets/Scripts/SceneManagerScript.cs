@@ -4,14 +4,14 @@ using UnityEngine.UI;
 
 public class SceneManagerScript : MonoBehaviour
 {
-    private int level;
+    //private int level;
     public void LoadScene(string sceneName)
     { 
-        NewLevelSelected(level);
-        SceneManager.LoadScene("Game_1");
+        NewLevelSelected(sceneName);
+        //SceneManager.LoadScene("Game_1");
     }
 
-    public void NewLevelSelected(int level)
+    public void NewLevelSelected(string sceneName)
     {
         // Armazene o nome da cena do jogo
         PlayerPrefs.SetString("sceneToLoad", sceneName);
@@ -19,6 +19,6 @@ public class SceneManagerScript : MonoBehaviour
         // Carregue a cena de carregamento
         SceneManager.LoadScene("LoadingScreen");
         
-        MainManager.Instance.levelSelected = level;
+        //MainManager.Instance.levelSelected = level;
     }
 }

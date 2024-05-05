@@ -14,7 +14,8 @@ public class SQLiteManager : MonoBehaviour
     void Start()
     {
         OpenConnection();
-        CreateTable();        
+        //CreateTable();  
+        CloseConnection();      
     }
 
     private void OpenConnection()
@@ -22,7 +23,10 @@ public class SQLiteManager : MonoBehaviour
         connection = new SqliteConnection(urlDataBase);
         connection.Open();
     }
-
+      private void CloseConnection()
+    {
+        connection.Close();
+    }
     /*private void CreateTable()
     {
        
