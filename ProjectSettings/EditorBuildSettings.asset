@@ -12,6 +12,10 @@ EditorBuildSettings:
     path: Assets/Scenes/Menu_alunos.unity
     guid: 5425fc08e09a51f4c9de9ad60a31933b
   - enabled: 1
+    path: Assets/Scenes/LoadingScreen.unity
+    guid: 1307fa585131228429de720a5d666709
+  - enabled: 1
     path: Assets/Scenes/Game_1.unity
     guid: d8c0eafc26af3694180a6595a2342c72
+
   m_configObjects: {}
