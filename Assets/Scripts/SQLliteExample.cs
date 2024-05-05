@@ -23,11 +23,14 @@ public class SQLiteManager : MonoBehaviour
         connection.Open();
     }
 
-    private void CreateTable()
+    /*private void CreateTable()
     {
        
         var command = connection.CreateCommand();
+
         command.CommandText = "CREATE TABLE IF NOT EXISTS history (history_id INTEGER  PRIMARY KEY, nome VARCHAR); CREATE TABLE IF NOT EXISTS fase (fase_id INTEGER  PRIMARY KEY ,history_id INT,nome VARCHAR,FOREIGN KEY (history_id) REFERENCES history(history_id)); CREATE TABLE IF NOT EXISTS questao (questao_id INTEGER  PRIMARY KEY , fase_id INT, questao_enunciado TEXT, FOREIGN KEY (fase_id) REFERENCES fase(fase_id)); CREATE TABLE IF NOT EXISTS opcoes (opcoes_id INTEGER  PRIMARY KEY, questao_id INT,  opcao_texto TEXT, correta INTEGER, FOREIGN KEY (questao_id) REFERENCES questao(questao_id));";
+
+
     
         command.ExecuteNonQuery();
         
@@ -38,7 +41,7 @@ public class SQLiteManager : MonoBehaviour
         command.CommandText = "DROP TABLE history; DROP TABLE fase; DROP TABLE questao; DROP TABLE opcoes;";
         command.ExecuteNonQuery();
     }
-
+*/
     public void InsertData(string name)
     {
         var command = connection.CreateCommand();
