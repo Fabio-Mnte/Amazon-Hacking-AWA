@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEditor;
 using System.IO;
+using UnityEditor;
+using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 public class OpenImagesplz : MonoBehaviour
 {
@@ -24,9 +24,20 @@ public class OpenImagesplz : MonoBehaviour
             UpdateImage();
         }
     }
+
     void UpdateImage()
     {
-        WWW www = new WWW("file:///" + path);
-        image.texture = www.texture;
+        StartCoroutine(DownloadImage());
+    }
+
+    IEnumerator DownloadImage()
+    {
+        UnityWebRequest request = UnityWebRequestTexture.GetTexture("file:///" + path);
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.ProtocolError) 
+            Debug.Log(request.error);
+        else
+            image.texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
     }
 }
