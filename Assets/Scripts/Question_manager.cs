@@ -10,7 +10,7 @@ public class Question_manager : MonoBehaviour
 {
     private static string path;
     private int questaoAtual = 0;
-    private string urlDataBase = $"URI=file:{path}";
+    private string urlDataBase;
     private SqliteConnection connection;
     public GameObject OptionContainer;
     public TMP_Text question;
@@ -25,7 +25,10 @@ public class Question_manager : MonoBehaviour
     private int index = MainManager.Instance.levelSelected;
     void Start()
     {
-        path = Application.persistentDataPath + "/Resources/Awa.db";
+         
+        path = Application.dataPath + "/Resources/Awa.db";
+        urlDataBase = $"URI=file:{path}";
+        Debug.Log($"{path} ");
         setLimite();
         loadData();
     }

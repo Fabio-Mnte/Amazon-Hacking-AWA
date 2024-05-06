@@ -7,16 +7,17 @@ using UnityEngine.UI;
 
 public class LevelLoader : MonoBehaviour
 {
-    private static string path;
-    private string urlDataBase = $"URI=file:{path}";
+    private static string dbPath;
+    private string urlDataBase;
     private SqliteConnection connection;
     public GameObject FaseContainer;
     private int level;
 
     void Start()
     {
-        path = Application.persistentDataPath + "/Resources/Awa.db";
-        Debug.Log($"{path}");
+        dbPath = Application.dataPath + "/Resources/Awa.db";
+        urlDataBase = $"URI=file:{dbPath}";
+        Debug.Log($"{urlDataBase}");
         OpenConnection();
         Load();
         CloseConnection();
