@@ -1,0 +1,170 @@
+CREATE TABLE IF NOT EXISTS historia (
+  historia_id INTEGER  PRIMARY KEY,
+  historia_texto VARCHAR
+); 
+
+CREATE TABLE IF NOT EXISTS fase (
+  fase_id INTEGER  PRIMARY KEY,
+  historia_id INT,
+  fase_texto TEXT,
+  FOREIGN KEY (historia_id) REFERENCES history(historia_id)
+);
+
+CREATE TABLE IF NOT EXISTS questao (
+  questao_id INTEGER  PRIMARY KEY,
+  fase_id INT,
+  questao_texto TEXT,
+  FOREIGN KEY (fase_id) REFERENCES fase(fase_id)
+);
+
+CREATE TABLE IF NOT EXISTS opcoes (
+  opcoes_id INTEGER  PRIMARY KEY,
+  questao_id INT,
+  numero INT,
+  opcao_texto TEXT,
+  correta INTEGER,
+  FOREIGN KEY (questao_id) REFERENCES questao(questao_id)
+);
+
+DROP TABLE opcoes; 
+DROP TABLE questao ; 
+DROP TABLE fase; 
+DROP TABLE historia ; 
+
+INSERT INTO historia
+(historia_texto)
+VALUES('historia1');
+
+INSERT INTO fase
+(historia_id, fase_texto)
+VALUES(1, 'Fase_1');
+
+INSERT INTO fase
+(historia_id, fase_texto)
+VALUES(1, 'Fase 2');
+
+INSERT INTO questao
+(fase_id, questao_texto)
+VALUES(1, 'Questao 1');
+
+INSERT INTO questao
+(fase_id, questao_texto)
+VALUES(1, 'Questao 2');
+
+INSERT INTO questao
+(fase_id, questao_texto)
+VALUES(2, 'Questao 3');
+
+INSERT INTO questao
+(fase_id, questao_texto)
+VALUES(2, 'Questao 4');
+
+INSERT INTO opcoes
+(questao_id, opcao_texto, correta)
+VALUES(1, 'opcao 1', 0);
+
+INSERT INTO opcoes
+(questao_id, opcao_texto, correta)
+VALUES(1, 'opcao 2', 0);
+
+INSERT INTO opcoes
+(questao_id, opcao_texto, correta)
+VALUES(1, 'opcao 3', 1);
+
+INSERT INTO opcoes
+(questao_id, opcao_texto, correta)
+VALUES(1, 'opcao 4', 0);
+
+INSERT INTO opcoes
+(questao_id, opcao_texto, correta)
+VALUES(2, 'opcao 1', 0);
+
+INSERT INTO opcoes
+(questao_id, opcao_texto, correta)
+VALUES(2, 'opcao 2', 0);
+
+INSERT INTO opcoes
+(questao_id, opcao_texto, correta)
+VALUES(2, 'opcao 3', 0);
+
+INSERT INTO opcoes
+(questao_id, opcao_texto, correta)
+VALUES(2, 'opcao 4', 1);
+
+INSERT INTO opcoes
+(questao_id, opcao_texto, correta)
+VALUES(3, 'opcao 1', 1);
+INSERT INTO opcoes
+(questao_id, opcao_texto, correta)
+VALUES(3, 'opcao 2', 0);
+INSERT INTO opcoes
+(questao_id, opcao_texto, correta)
+VALUES(3, 'opcao 3', 0);
+INSERT INTO opcoes
+(questao_id, opcao_texto, correta)
+VALUES(3, 'opcao 4', 0);
+
+INSERT INTO opcoes
+(questao_id, opcao_texto, correta)
+VALUES(4, 'opcao 1', 0);
+INSERT INTO opcoes
+(questao_id, opcao_texto, correta)
+VALUES(4, 'opcao 2', 1);
+INSERT INTO opcoes
+(questao_id, opcao_texto, correta)
+VALUES(4, 'opcao 3', 0);
+INSERT INTO opcoes
+(questao_id, opcao_texto, correta)
+VALUES(4, 'opcao 4', 0);
+
+
+SELECT historia_texto, fase_texto, questao_texto, opcao_texto FROM historia h
+LEFT JOIN fase  f
+ON h.historia_id == f.historia_id
+LEFT JOIN questao q
+ON q.fase_id == f.fase_id 
+LEFT JOIN opcoes o 
+ON q.questao_id == o.questao_id 
+WHERE h.historia_id == 1
+
+SELECT * FROM opcoes o ;
+
+
+SELECT * FROM historia as h JOIN fase as f ON h.historia_id == f.historia_id
+JOIN questao as q ON q.fase_id == f.fase_id 
+JOIN opcoes as o ON q.questao_id == o.questao_id WHERE h.historia_id == 1 AND q.questao_id == 1 
+
+
+
+INSERT INTO historia (historia_texto) VALUES ('Conhecimentos Gerais');
+INSERT INTO fase (historia_id, fase_texto) VALUES ((SELECT historia_id FROM historia WHERE historia_texto = 'Conhecimentos Gerais'), 'Questões de Múltipla Escolha');
+
+INSERT INTO questao (fase_id, questao_texto) VALUES ((SELECT fase_id FROM fase WHERE fase_texto = 'Questões de Múltipla Escolha'), 'Qual é o número após o 5?');
+INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = 'Qual é o número após o 5?'), 1, '6', 1);
+INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = 'Qual é o número após o 5?'), 2, '7', 0);
+INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = 'Qual é o número após o 5?'), 3, '10', 0);
+INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = 'Qual é o número após o 5?'), 4, '3', 0);
+
+INSERT INTO questao (fase_id, questao_texto) VALUES ((SELECT fase_id FROM fase WHERE fase_texto = 'Questões de Múltipla Escolha'), 'O que as plantas precisam para crescer?');
+INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = 'O que as plantas precisam para crescer?'), 1, 'Água e sol', 1);
+INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = 'O que as plantas precisam para crescer?'), 2, 'Ar e comida', 0);
+INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = 'O que as plantas precisam para crescer?'), 3, 'Luz e calor', 0);
+INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = 'O que as plantas precisam para crescer?'), 4, 'Solo e pedras', 0);
+
+INSERT INTO questao (fase_id, questao_texto) VALUES ((SELECT fase_id FROM fase WHERE fase_texto = 'Questões de Múltipla Escolha'), 'Qual é a cor do céu em um dia ensolarado?');
+INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = 'Qual é a cor do céu em um dia ensolarado?'), 1, 'Azul', 1);
+INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = 'Qual é a cor do céu em um dia ensolarado?'), 2, 'Verde', 0);
+INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = 'Qual é a cor do céu em um dia ensolarado?'), 3, 'Vermelho', 0);
+INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = 'Qual é a cor do céu em um dia ensolarado?'), 4, 'Amarelo', 0);
+
+INSERT INTO questao (fase_id, questao_texto) VALUES ((SELECT fase_id FROM fase WHERE fase_texto = 'Questões de Múltipla Escolha'), 'Quantos dedos você tem em uma mão?');
+INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = 'Quantos dedos você tem em uma mão?'), 1, '5', 1);
+INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = 'Quantos dedos você tem em uma mão?'), 2, '6', 0);
+INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = 'Quantos dedos você tem em uma mão?'), 3, '10', 0);
+INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = 'Quantos dedos você tem em uma mão?'), 4, '8', 0);
+
+INSERT INTO questao (fase_id, questao_texto) VALUES ((SELECT fase_id FROM fase WHERE fase_texto = 'Questões de Múltipla Escolha'), 'Qual é o nome do animal que diz "mu"?');
+INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = a'Qual é o nome do animal que diz "mu"?'), 1, 'Vaca', 1);
+INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = 'Qual é o nome do animal que diz "mu"?'), 2, 'Galinha', 0);
+INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = 'Qual é o nome do animal que diz "mu"?'), 3, 'Gato', 0);
+INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = 'Qual é o nome do animal que diz "mu"?'), 4, 'Cachorro', 0);
