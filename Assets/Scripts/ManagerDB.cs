@@ -6,16 +6,17 @@ using Mono.Data.SqliteClient;
 
 public class ManagerDB : MonoBehaviour
 {
-
-    private string urlDataBase = "URI=file:Assets/Awa.db";
+    private static string path;
+    private string urlDataBase = $"URI=file:{path}";
     private SqliteConnection connection;
 
     // Start is called before the first frame update
     void Start()
     {
+        path = Application.persistentDataPath + "/Resources/Awa.db";
         OpenConnection();
 
-        //operações iniciais do banco
+        //operaï¿½ï¿½es iniciais do banco
 
         CloseConnection();
     }

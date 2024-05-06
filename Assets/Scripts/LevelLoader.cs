@@ -7,18 +7,16 @@ using UnityEngine.UI;
 
 public class LevelLoader : MonoBehaviour
 {
-    private string urlDataBase = "URI=file:Assets/Awa.db";
-
+    private static string path;
+    private string urlDataBase = $"URI=file:{path}";
     private SqliteConnection connection;
-    //public List<TMP_Text> levelTextList;
     public GameObject FaseContainer;
-    //public TMP_Text LevelText;
-    //public Button button;
     private int level;
 
-    // Start is called before the first frame update
     void Start()
     {
+        path = Application.persistentDataPath + "/Resources/Awa.db";
+        Debug.Log($"{path}");
         OpenConnection();
         Load();
         CloseConnection();
@@ -26,26 +24,25 @@ public class LevelLoader : MonoBehaviour
 
     private void Load()
     {
-        
-        Debug.Log($"{FaseContainer.transform.GetChild(2).name}");
         var command = connection.CreateCommand();
         command.CommandText = $"SELECT * FROM historia";
         var reader = command.ExecuteReader();
-        int i = 0;
+        int x = 0;
         while (reader.Read())
         {
             level = (int)reader["historia_id"];
-            //levelTextList[i].text = $"{reader["historia_texto"]}";
-            FaseContainer.transform.GetChild(i).GetChild(1).gameObject.GetComponent<TMP_Text>().text= $"{reader["historia_texto"]}";
-            //Debug.Log($"historia: {reader["historia_texto"]}, id: {reader["historia_id"]}");
-            //Debug.Log($"{levelTextList[i].transform.parent.name}");
-            //levelTextList[i].transform.parent.gameObject.GetComponent<Button>().interactable = false;
-            //button.interactable = false;
-            i++;
+            FaseContainer
+                .transform.GetChild(x)
+                .GetChild(1)
+                .gameObject.GetComponent<TMP_Text>()
+                .text = $"{reader["historia_texto"]}";
+            x++;
         }
-        for(i = i; i < 6; i++){
-            //levelTextList[i].transform.parent.gameObject.GetComponent<Button>().interactable = false;
-            FaseContainer.transform.GetChild(i).gameObject.GetComponent<Button>().interactable = false;
+        while(x < 6)
+        {
+            FaseContainer.transform.GetChild(x).gameObject.GetComponent<Button>().interactable =
+                false;
+            x++;
         }
     }
 
