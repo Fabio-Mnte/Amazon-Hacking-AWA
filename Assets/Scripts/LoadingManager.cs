@@ -24,13 +24,17 @@ public class LoadingManager : MonoBehaviour
         float progress = 0f;
         while (progress < 1f)
         {
-            progress = Mathf.Lerp(progress, asyncOperation.progress < 0.9f ? asyncOperation.progress : 1f, Time.deltaTime * 5);
+            progress = Mathf.Lerp(
+                progress,
+                asyncOperation.progress < 0.9f ? asyncOperation.progress : 1f,
+                Time.deltaTime * 5
+            );
             if (loadingSlider != null)
             {
                 loadingSlider.value = progress;
             }
 
-            // Se o progresso estiver completo e a cena ainda não estiver ativada, ative a cena
+            // Se o progresso estiver completo e a cena ainda nï¿½o estiver ativada, ative a cena
             if (progress >= 0.999f && !asyncOperation.allowSceneActivation)
             {
                 asyncOperation.allowSceneActivation = true;
@@ -39,5 +43,4 @@ public class LoadingManager : MonoBehaviour
             yield return null;
         }
     }
-
 }

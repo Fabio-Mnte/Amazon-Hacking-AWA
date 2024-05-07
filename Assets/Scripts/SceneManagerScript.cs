@@ -4,11 +4,15 @@ using UnityEngine.UI;
 
 public class SceneManagerScript : MonoBehaviour
 {
-    //private int level;
+    private int level;
+    
     public void LoadScene(string sceneName)
     { 
         NewLevelSelected(sceneName);
         //SceneManager.LoadScene("Game_1");
+    }
+    public void saveScene(int level){
+        MainManager.Instance.levelSelected = level;
     }
 
     public void NewLevelSelected(string sceneName)
