@@ -18,7 +18,7 @@ public class LevelLoader : MonoBehaviour
     {
         dbPath = Application.dataPath + "/Resources/Awa.db";
         urlDataBase = $"URI=file:{dbPath}";
-        Debug.Log($"{urlDataBase}");
+        //Debug.Log($"{urlDataBase}");
         OpenConnection();
         Load();
         CloseConnection();
