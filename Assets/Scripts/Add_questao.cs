@@ -16,7 +16,7 @@ public class Add_questao : MonoBehaviour
         //CloseConnection();
     }
 
-    public void cancelar()
+    public void desativarPopup()
     {
         container.transform.parent.parent.gameObject.SetActive(false);
     }
@@ -40,5 +40,6 @@ public class Add_questao : MonoBehaviour
 
             Debug.Log($"{opcoes[i]}");
         }
+        desativarPopup();
     }
 }
