@@ -60,17 +60,21 @@ public class NewBehaviourScript : MonoBehaviour
             return;
         }
 
-        Vector2 deltaValue = Gamepad.current.leftStick.ReadValue();
-        deltaValue *= cursorSpeed * Time.deltaTime;
+        float horizontalDelta = Gamepad.current.leftStick.ReadValue().x;
+        horizontalDelta *= cursorSpeed * Time.deltaTime;
+        float verticalDelta = Gamepad.current.leftStick.ReadValue().y;
+        verticalDelta *= cursorSpeed * Time.deltaTime;
+
+        
 
         Vector2 currentPosition = virtualMouse.position.ReadValue();
-        Vector2 newPosition = currentPosition + deltaValue;
+        Vector2 newPosition = currentPosition + new Vector2(horizontalDelta, verticalDelta);
 
         newPosition.x = Mathf.Clamp(newPosition.x, 0, Screen.width);
-        newPosition.x = Mathf.Clamp(newPosition.y, 0, Screen.height);
+        newPosition.y = Mathf.Clamp(newPosition.y, 0, Screen.height);
 
         InputState.Change(virtualMouse.position, newPosition);
-        InputState.Change(virtualMouse.delta, deltaValue);
+        InputState.Change(virtualMouse.delta, horizontalDelta + verticalDelta);
 
         bool aButtonIsPressed = Gamepad.current.aButton.IsPressed();
         if (previousMouseState != aButtonIsPressed)
