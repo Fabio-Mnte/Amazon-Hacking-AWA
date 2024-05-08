@@ -6,6 +6,7 @@ public class MainManager : MonoBehaviour
 {
     public static MainManager Instance;
     public int levelSelected;
+    public int tipoLoad;
 
     private void Awake(){
         if(Instance != null){
