@@ -10,18 +10,19 @@ public class Add_questao : MonoBehaviour
     public GameObject container;
     private string urlDataBase;
     private SqliteConnection connection;
-    private string[] opcoes = new string[50];
-    private List<int> corretas = new List<int>();
+    private string[] opcoes = new string[50]; // Array para armazenar as opções de resposta
+    private List<int> corretas = new List<int>(); // Lista para armazenar índices das respostas corretas
 
+    // Método para ativar o popup de adição de questão
     public void ativarPopup()
     {
         string path = Application.dataPath + "/Resources/Awa.db";
         urlDataBase = $"URI=file:{path}";
-        OpenConnection();
-        container.transform.parent.parent.gameObject.SetActive(true);
-        
+        OpenConnection(); // Abre a conexão com o banco de dados
+        container.transform.parent.parent.gameObject.SetActive(true); // Ativa o popup
     }
 
+    // Método para abrir a conexão com o banco de dados
     private void OpenConnection()
     {
         Debug.Log($"{urlDataBase}");
@@ -29,17 +30,20 @@ public class Add_questao : MonoBehaviour
         connection.Open();
     }
 
+    // Método para fechar a conexão com o banco de dados
     private void CloseConnection()
     {
         connection.Close();
     }
 
+    // Método para desativar o popup de adição de questão
     public void desativarPopup()
     {
-        container.transform.parent.parent.gameObject.SetActive(false);
-        CloseConnection();
+        container.transform.parent.parent.gameObject.SetActive(false); // Desativa o popup
+        CloseConnection(); // Fecha a conexão com o banco de dados
     }
 
+    // Método para salvar a questão e suas opções no banco de dados
     public void salvarQuestao()
     {
         for (int i = 0; i < 4; i++)
@@ -55,7 +59,7 @@ public class Add_questao : MonoBehaviour
             );
             if (alternativa.transform.GetChild(3).gameObject.GetComponent<Toggle>().isOn)
             {
-                corretas.Add(i);
+                corretas.Add(i); // Adiciona o índice da opção correta à lista
             }
 
             Debug.Log($"{opcoes[i]}");
@@ -67,16 +71,17 @@ public class Add_questao : MonoBehaviour
             .GetChild(2)
             .gameObject.GetComponent<TMP_Text>()
             .text;
-        addBanco(questao, opcoes, corretas);
-        desativarPopup();
+        addBanco(questao, opcoes, corretas); // Adiciona a questão e suas opções ao banco de dados
+        desativarPopup(); // Desativa o popup após salvar a questão
     }
 
+    // Método para adicionar a questão e suas opções ao banco de dados
     private void addBanco(string questao, string[] opcoes, List<int> corretas)
     {
-        int faseId = MainManager.Instance.faseSelected;
+        int faseId = MainManager.Instance.faseSelected; // Obtém o ID da fase selecionada
         var command = connection.CreateCommand();
         command.CommandText =
-            $"INSERT INTO questao (fase_id, questao_texto) VALUES ('{faseId}', '{questao}');";
+            $"INSERT INTO questao (fase_id, questao_texto) VALUES ('{faseId}', '{questao}');"; // Insere a questão na tabela 'questao'
         command.ExecuteReader();
         int CorretaAtual;
         for (int i = 0; i < 4; i++)
@@ -90,9 +95,8 @@ public class Add_questao : MonoBehaviour
                 CorretaAtual = 0;
             }
             command.CommandText =
-                $"INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = '{questao}'), {i+1}, '{opcoes[i]}', {CorretaAtual});";
+                $"INSERT INTO opcoes (questao_id, numero, opcao_texto, correta) VALUES ((SELECT questao_id FROM questao WHERE questao_texto = '{questao}'), {i+1}, '{opcoes[i]}', {CorretaAtual});"; // Insere as opções de resposta na tabela 'opcoes'
             command.ExecuteReader();
         }
-        
     }
 }
