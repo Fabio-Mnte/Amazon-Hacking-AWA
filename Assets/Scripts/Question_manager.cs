@@ -28,7 +28,7 @@ public class Question_manager : MonoBehaviour
          
         path = Application.dataPath + "/Resources/Awa.db";
         urlDataBase = $"URI=file:{path}";
-        Debug.Log($"{path} ");
+        //Debug.Log($"{path} ");
         setLimite();
         loadData();
     }

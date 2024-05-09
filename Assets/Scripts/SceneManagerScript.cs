@@ -14,6 +14,9 @@ public class SceneManagerScript : MonoBehaviour
     public void saveScene(int level){
         MainManager.Instance.levelSelected = level;
     }
+    public void saveFase(int fase){
+        MainManager.Instance.faseSelected = fase;
+    }
 
     public void NewLevelSelected(string sceneName)
     {
