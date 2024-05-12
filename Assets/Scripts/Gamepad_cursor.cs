@@ -83,6 +83,7 @@ public class NewBehaviourScript : MonoBehaviour
             mouseState.WithButton(MouseButton.Left, aButtonIsPressed);
             InputState.Change(virtualMouse, mouseState);
             previousMouseState = aButtonIsPressed;
+            AudioManager.Instance.PlaySFX("ClicarBotao");
         }
 
         AnchorCursor(newPosition);
