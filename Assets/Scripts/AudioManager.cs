@@ -20,6 +20,11 @@ public class AudioManager : MonoBehaviour
     }
 
     public void Start() {
+        int levelSelected = MainManager.Instance.levelSelected;
+        Debug.Log($"{levelSelected} level selected");
+        /*if(levelSelected == 1){
+        PlayMusic("cena2"); //Caso ache uma música com este nome, ela começa a tocar assim que o jogo carregar.
+        }*/
         PlayMusic("Tema"); //Caso ache uma música com este nome, ela começa a tocar assim que o jogo carregar.
     }
 

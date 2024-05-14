@@ -27,6 +27,30 @@ public class Add_questao : MonoBehaviour
             Debug.Log("Entrou no carregar");
             carregarQuestao();
         }
+        else
+        {
+
+            container
+            .transform.GetChild(4)
+            .gameObject.transform.GetChild(1)
+            .gameObject.GetComponent<TMP_InputField>()
+            .text = "";
+            for (int i = 0; i < 4; i++)
+            {
+
+                container
+                .transform.GetChild(i)
+                .gameObject.transform.GetChild(1)
+                .gameObject.GetComponent<TMP_InputField>()
+                .text = "";
+
+                container
+                    .transform.GetChild(i)
+                    .gameObject.transform.GetChild(3)
+                    .gameObject.GetComponent<Toggle>()
+                    .isOn = false;
+            }
+        }
     }
 
     // Método para abrir a conexão com o banco de dados
@@ -145,12 +169,12 @@ public class Add_questao : MonoBehaviour
             if (corretas.Contains(i))
             {
                 command.CommandText =
-                    $"UPDATE opcoes SET opcao_texto = '{opcoes[i]}', correta = 1 WHERE numero = {i+1} AND questao_id = {questaoNum}";
+                    $"UPDATE opcoes SET opcao_texto = '{opcoes[i]}', correta = 1 WHERE numero = {i + 1} AND questao_id = {questaoNum}";
             }
             else
             {
                 command.CommandText =
-                    $"UPDATE opcoes SET opcao_texto = '{opcoes[i]}', correta = 0 WHERE numero = {i+1} AND questao_id = {questaoNum}";
+                    $"UPDATE opcoes SET opcao_texto = '{opcoes[i]}', correta = 0 WHERE numero = {i + 1} AND questao_id = {questaoNum}";
             }
             command.ExecuteReader();
         }
