@@ -20,7 +20,7 @@ public class AudioManager : MonoBehaviour
     }
 
     public void Start() {
-        PlayMusic("Cymatics - Interstellar");
+        PlayMusic("Tema"); //Caso ache uma música com este nome, ela começa a tocar assim que o jogo carregar.
     }
 
 
@@ -33,6 +33,8 @@ public class AudioManager : MonoBehaviour
             musicSource.clip = mySound.clip;
             musicSource.Play();
         }
+        //Caso a música esteja no músicSounds (do tipo Sounds[] que pode ser acessado diretamente pela Unity), ela começará a tocar. 
+        //Caso não esteja, uma mensagem de 'Som não encontrado' será exibida no console.
     }
 
 
@@ -44,6 +46,7 @@ public class AudioManager : MonoBehaviour
         } else {
             sfxSource.PlayOneShot(mySound.clip);
         }
+        //A mesma lógica do PlayMusic() é aplicada aqui, mas para os SFX.
     }
 
 
