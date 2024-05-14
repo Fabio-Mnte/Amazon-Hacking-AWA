@@ -5,6 +5,11 @@ using UnityEngine.UI;
 public class SceneManagerScript : MonoBehaviour
 {
     private int level;
+
+    public void ExitGame() {
+        Debug.Log("Teste");
+        Application.Quit(); //Ignorado no Editor.
+    }
     
     public void LoadScene(string sceneName)
     { 
