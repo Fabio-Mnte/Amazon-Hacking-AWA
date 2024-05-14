@@ -136,13 +136,15 @@ public class Question_manager : MonoBehaviour
         int numValue = int.Parse($"{reader["numero"]}");
         if (escolha == numValue)
         {
-            resultado.text = "Jogador 1 acertou!"; // Exibe a mensagem de acerto
-            time1++; // Incrementa a pontuação do Time 1
-            placar.text = $"time 1 \n{time1} pontos\ntime 2 \n{time2} pontos"; // Atualiza o placar
+            resultado.text = "Jogador 1 acertou!";
+            time1++;
+            placar.text = $"time 1 \n{time1} pontos\ntime 2 \n{time2} pontos";
+            AudioManager.Instance.PlaySFX("AcertarQuestao");
         }
         else
         {
-            resultado.text = "Ninguém acertou!"; // Exibe a mensagem de erro
+            resultado.text = "Ninguém acertou!";
+            AudioManager.Instance.PlaySFX("ErrarQuestao");
         }
         resultado.GetComponent<TMP_Text>().enabled = true; // Habilita a exibição do resultado
         Button botao = resultado.transform.parent.GetChild(5).GetComponent<Button>();
