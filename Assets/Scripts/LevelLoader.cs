@@ -31,7 +31,8 @@ public class LevelLoader : MonoBehaviour
             LoadFase(); // Carrega as fases se estiver na cena de edição de história
             return;
         }
-        else if(scene.name == "Editar_fase"){
+        else if (scene.name == "Editar_fase")
+        {
             LoadQuest(); // Carrega as questões se estiver na cena de edição de fase
             return;
         }
@@ -97,8 +98,12 @@ public class LevelLoader : MonoBehaviour
                 .GetChild(1)
                 .gameObject.GetComponent<TMP_Text>()
                 .text = $"{reader["questao_texto"]}"; // Define o texto da questão nas UI Texts
+            
+            
+            //LoadButtons(x);
             x++;
         }
+
         while (x < 6)
         {
             FaseContainer.transform.GetChild(x).gameObject.GetComponent<Button>().interactable =
@@ -106,6 +111,29 @@ public class LevelLoader : MonoBehaviour
             x++;
         }
     }
+
+/*
+    private void LoadButtons(int x)
+    {
+        
+        FaseContainer
+            .transform.GetChild(x)
+            .gameObject.GetComponent<Button>()
+            .onClick.AddListener(customOnclick);
+    }
+
+    private void customOnclick()
+    {
+        FaseContainer
+            .transform.parent.parent.parent.gameObject.GetComponent<Add_questao>()
+            .ativarPopup((int) reader["questao_id"]); 
+     
+        FaseContainer
+            .transform.parent.parent.parent.gameObject.GetComponent<Add_questao>()
+            .teste("blip"); 
+        
+    }
+    */
 
     private void OpenConnection()
     {

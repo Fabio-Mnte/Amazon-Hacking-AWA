@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Mono.Data.SqliteClient;
@@ -19,8 +20,8 @@ public class Add_questao : MonoBehaviour
     {
         string path = Application.dataPath + "/Resources/Awa.db";
         urlDataBase = $"URI=file:{path}";
-        questaoNum = questao;
         OpenConnection(); // Abre a conexão com o banco de dados
+        setQuestao(questao);
         container.transform.parent.parent.gameObject.SetActive(true); // Ativa o popup
         if (questaoNum > 0)
         {
@@ -29,20 +30,21 @@ public class Add_questao : MonoBehaviour
         }
         else
         {
-
             container
-            .transform.GetChild(4)
-            .gameObject.transform.GetChild(1)
-            .gameObject.GetComponent<TMP_InputField>()
-            .text = "";
-            for (int i = 0; i < 4; i++)
-            {
-
-                container
-                .transform.GetChild(i)
+                .transform.GetChild(4)
                 .gameObject.transform.GetChild(1)
                 .gameObject.GetComponent<TMP_InputField>()
                 .text = "";
+
+            container.transform.GetChild(6).gameObject.SetActive(false);
+
+            for (int i = 0; i < 4; i++)
+            {
+                container
+                    .transform.GetChild(i)
+                    .gameObject.transform.GetChild(1)
+                    .gameObject.GetComponent<TMP_InputField>()
+                    .text = "";
 
                 container
                     .transform.GetChild(i)
@@ -50,6 +52,28 @@ public class Add_questao : MonoBehaviour
                     .gameObject.GetComponent<Toggle>()
                     .isOn = false;
             }
+        }
+    }
+
+    private void setQuestao(int questao)
+    {
+        if(questao != 0){
+        int faseId = MainManager.Instance.faseSelected; // Obtém o ID da fase selecionada
+        var command = connection.CreateCommand();
+        List<int> lista = new List<int>();
+        command.CommandText = $"SELECT questao_id FROM questao WHERE fase_id = '{faseId}';";
+        var reader = command.ExecuteReader();
+        while (reader.Read())
+        {
+            int teste = Int32.Parse($"{reader["questao_id"]}");
+            lista.Add(teste);
+        }
+        
+        Debug.Log(lista[questao - 1]);
+        questaoNum = lista[questao - 1];
+        Debug.Log("teste");
+        } else{
+            questaoNum = 0;
         }
     }
 
@@ -71,11 +95,14 @@ public class Add_questao : MonoBehaviour
     public void desativarPopup()
     {
         container.transform.parent.parent.gameObject.SetActive(false); // Desativa o popup
+        container.transform.parent.parent.parent.GetChild(3).gameObject.SetActive(false); //desativa o popup de deleção
         CloseConnection(); // Fecha a conexão com o banco de dados
     }
 
     public void carregarQuestao()
     {
+        container.transform.GetChild(6).gameObject.SetActive(true);
+
         int faseId = MainManager.Instance.faseSelected; // Obtém o ID da fase selecionada
         var command = connection.CreateCommand();
         command.CommandText =
@@ -168,7 +195,7 @@ public class Add_questao : MonoBehaviour
         var command = connection.CreateCommand();
         command.CommandText =
             $"UPDATE questao SET questao_texto = '{questao}' WHERE questao_id = {questaoNum}";
-            command.ExecuteReader();
+        command.ExecuteReader();
         for (int i = 0; i < 4; i++)
         {
             if (corretas.Contains(i))
@@ -183,7 +210,23 @@ public class Add_questao : MonoBehaviour
                     $"UPDATE opcoes SET opcao_texto = '{opcoes[i]}', correta = 0 WHERE numero = {i + 1} AND questao_id = {questaoNum}";
                 command.ExecuteReader();
             }
-            
+        }
+    }
+
+    public void confirmDelete()
+    {
+        container.transform.parent.parent.parent.GetChild(3).gameObject.SetActive(true); //desativa o popup de deleção
+    }
+
+    public void deletarQuestao()
+    {
+        if (questaoNum != 0)
+        {
+            var command = connection.CreateCommand();
+            command.CommandText = $"DELETE FROM questao WHERE questao_id = {questaoNum}";
+            command.ExecuteReader();
+            command.CommandText = $"DELETE FROM opcoes WHERE questao_id = {questaoNum}";
+            command.ExecuteReader();
         }
     }
 
