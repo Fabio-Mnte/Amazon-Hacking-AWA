@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -20,12 +21,15 @@ public class Question_manager : MonoBehaviour
     private int time2; // Pontuação do Time 2
     private int limite; // Número máximo de questões
     private int index = MainManager.Instance.levelSelected; // Índice do nível selecionado
+    private Dictionary<int, List<string>> data = new Dictionary<int, List<string>>();
+    private List<string> alternativasCorretas = new List<string>();
 
     void Start()
     {
         path = Application.dataPath + "/Resources/Awa.db";
         urlDataBase = $"URI=file:{path}";
         setLimite(); // Define o limite de questões
+        getData();
         loadData(); // Carrega a primeira questão
     }
 
@@ -38,6 +42,43 @@ public class Question_manager : MonoBehaviour
         var reader = command.ExecuteReader();
         reader.Read();
         limite = int.Parse($"{reader["limite"]}"); // Obtém o número máximo de questões
+    }
+
+    private void getData()
+    {
+        OpenConnection();
+        var command = connection.CreateCommand();
+        command.CommandText =
+            $"SELECT * FROM historia as h JOIN fase as f ON h.historia_id == f.historia_id JOIN questao as q ON q.fase_id == f.fase_id JOIN opcoes as o ON q.questao_id == o.questao_id WHERE h.historia_id == {index};";
+        var reader = command.ExecuteReader();
+
+        while (reader.Read())
+        {
+            if (data.ContainsKey(Int32.Parse($"{reader["questao_id"]}")))
+            {
+                List<string> temp = data[Int32.Parse($"{reader["questao_id"]}")];
+
+                temp.Add($"{reader["opcao_texto"]}");
+                data[Int32.Parse($"{reader["questao_id"]}")] = temp;
+                string teste = string.Join(",", data[Int32.Parse($"{reader["questao_id"]}")]);
+                Debug.Log($"{teste}");
+            }
+            else
+            {
+                List<string> temp = new List<string>();
+                temp.Add($"{reader["questao_texto"]}");
+
+                temp.Add($"{reader["opcao_texto"]}");
+                data.Add(Int32.Parse($"{reader["questao_id"]}"), temp);
+            }
+            if (Int32.Parse($"{reader["correta"]}") == 1)
+            {
+                //Debug.Log($"{reader["opcao_texto"]}");
+                alternativasCorretas.Add($"{reader["opcao_texto"]}");
+            }
+        }
+
+        CloseConnection();
     }
 
     private void OpenConnection()
@@ -72,29 +113,30 @@ public class Question_manager : MonoBehaviour
     public void loadData()
     {
         destravar(); // Habilita os botões das opções de resposta
-        OpenConnection();
+
         Button botao = resultado.transform.parent.GetChild(5).GetComponent<Button>();
         botao.gameObject.SetActive(false);
         resultado.GetComponent<TMP_Text>().enabled = false;
-        questaoAtual++;
-        var command = connection.CreateCommand();
-        command.CommandText =
-            $"SELECT * FROM historia as h JOIN fase as f ON h.historia_id == f.historia_id JOIN questao as q ON q.fase_id == f.fase_id JOIN opcoes as o ON q.questao_id == o.questao_id WHERE h.historia_id == {index} AND q.questao_id == {questaoAtual};";
-        var reader = command.ExecuteReader();
-        int i = 0;
-        while (reader.Read())
+        Dictionary<int, List<string>>.KeyCollection keyColl = data.Keys;
+        List<int> keys = new List<int>();
+        foreach (int x in keyColl)
         {
-            question.text = $"{reader["questao_texto"]}"; // Define o texto da pergunta
+            keys.Add(x);
+        }
+
+        List<string> temp = data[Int32.Parse($"{keys[questaoAtual]}")];
+        for (int i = 0; i < 4; i++)
+        {
+            question.text = $"{temp[0]}"; // Define o texto da pergunta
             OptionContainer
                 .transform.GetChild(i)
                 .GetChild(0)
                 .GetChild(0)
                 .GetChild(0)
                 .gameObject.GetComponent<TMP_Text>()
-                .text = $"{reader["opcao_texto"]}"; // Define o texto das opções de resposta
-            i++;
+                .text = $"{temp[i + 1]}"; // Define o texto das opções de resposta
         }
-        CloseConnection();
+        questaoAtual++;
     }
 
     private void travar()
@@ -126,15 +168,25 @@ public class Question_manager : MonoBehaviour
     public void escolherResultado(int escolha)
     {
         Debug.Log($"{escolha}");
-        OpenConnection();
+
+        //OpenConnection();
         travar(); // Desabilita os botões das opções de resposta
-        var command = connection.CreateCommand();
-        command.CommandText =
-            $"SELECT o.numero FROM historia as h JOIN fase as f ON h.historia_id == f.historia_id JOIN questao as q ON q.fase_id == f.fase_id JOIN opcoes as o ON q.questao_id == o.questao_id WHERE h.historia_id == {index} AND q.questao_id == {questaoAtual} AND correta == 1;";
-        var reader = command.ExecuteReader();
-        reader.Read();
-        int numValue = int.Parse($"{reader["numero"]}");
-        if (escolha == numValue)
+        // var command = connection.CreateCommand();
+        // command.CommandText =
+        //     $"SELECT o.numero FROM historia as h JOIN fase as f ON h.historia_id == f.historia_id JOIN questao as q ON q.fase_id == f.fase_id JOIN opcoes as o ON q.questao_id == o.questao_id WHERE h.historia_id == {index} AND q.questao_id == {questaoAtual} AND correta == 1;";
+        // var reader = command.ExecuteReader();
+        // reader.Read();
+        // int numValue = int.Parse($"{reader["numero"]}");
+
+        string resposta = OptionContainer
+            .transform.GetChild(escolha-1)
+            .GetChild(0)
+            .GetChild(0)
+            .GetChild(0)
+            .gameObject.GetComponent<TMP_Text>()
+            .text;
+
+        if (alternativasCorretas.Contains(resposta))
         {
             resultado.text = "Jogador 1 acertou!";
             time1++;

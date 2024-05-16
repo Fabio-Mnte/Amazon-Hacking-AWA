@@ -35,7 +35,9 @@ public class AudioManager : MonoBehaviour
         if (mySound == null) {
             Debug.Log("Som não encontrado!");
         } else {
+            
             musicSource.clip = mySound.clip;
+            musicSource.volume = 0.25f;
             musicSource.Play();
         }
         //Caso a música esteja no músicSounds (do tipo Sounds[] que pode ser acessado diretamente pela Unity), ela começará a tocar. 
