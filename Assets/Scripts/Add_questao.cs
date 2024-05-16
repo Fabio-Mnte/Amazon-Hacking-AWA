@@ -153,10 +153,12 @@ public class Add_questao : MonoBehaviour
         if (questaoNum != 0)
         {
             atualizarQuestao(questao, opcoes, corretas);
+            corretas.Clear();
         }
         else
         {
             addBanco(questao, opcoes, corretas); // Adiciona a questão e suas opções ao banco de dados
+            corretas.Clear();
         }
         desativarPopup(); // Desativa o popup após salvar a questão
     }
@@ -164,19 +166,24 @@ public class Add_questao : MonoBehaviour
     private void atualizarQuestao(string questao, string[] opcoes, List<int> corretas)
     {
         var command = connection.CreateCommand();
+        command.CommandText =
+            $"UPDATE questao SET questao_texto = '{questao}' WHERE questao_id = {questaoNum}";
+            command.ExecuteReader();
         for (int i = 0; i < 4; i++)
         {
             if (corretas.Contains(i))
             {
                 command.CommandText =
                     $"UPDATE opcoes SET opcao_texto = '{opcoes[i]}', correta = 1 WHERE numero = {i + 1} AND questao_id = {questaoNum}";
+                command.ExecuteReader();
             }
             else
             {
                 command.CommandText =
                     $"UPDATE opcoes SET opcao_texto = '{opcoes[i]}', correta = 0 WHERE numero = {i + 1} AND questao_id = {questaoNum}";
+                command.ExecuteReader();
             }
-            command.ExecuteReader();
+            
         }
     }
 
