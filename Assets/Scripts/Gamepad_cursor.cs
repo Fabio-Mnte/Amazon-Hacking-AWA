@@ -24,6 +24,9 @@ public class NewBehaviourScript : MonoBehaviour
     private Mouse virtualMouse;
     private Camera mainCamera;
 
+    [SerializeField]
+    private float buttonPressCooldown = 0.5f; // meio segundo de cooldown
+    private float lastButtonPressTime = -1f;
 
     private void AnchorCursor(Vector2 position)
     {
@@ -35,7 +38,7 @@ public class NewBehaviourScript : MonoBehaviour
             out anchoredPosition
         );
         cursorTransform.anchoredPosition = anchoredPosition;
-    } 
+    }
 
     private void OnEnable()
     {
@@ -50,7 +53,7 @@ public class NewBehaviourScript : MonoBehaviour
         }
         InputUser.PerformPairingWithDevice(virtualMouse, playerInput.user);
 
-        if (cursorTransform != null) 
+        if (cursorTransform != null)
         {
             Vector2 position = cursorTransform.anchoredPosition;
             InputState.Change(virtualMouse.position, position);
@@ -79,7 +82,7 @@ public class NewBehaviourScript : MonoBehaviour
         verticalDelta *= cursorSpeed * Time.deltaTime;
         //Pega as movimentações x e y do joystick.
 
-        
+
 
         Vector2 currentPosition = virtualMouse.position.ReadValue();
         Vector2 newPosition = currentPosition + new Vector2(horizontalDelta, verticalDelta);
@@ -93,17 +96,21 @@ public class NewBehaviourScript : MonoBehaviour
         //atualiza a posição do cursor de acordo com os valores obtidos acima.
 
         bool aButtonIsPressed = Gamepad.current.aButton.IsPressed(); //verifica se o botão 'a' foi pressionado.
-        if (previousMouseState != aButtonIsPressed) 
+        if (previousMouseState != aButtonIsPressed)
         {
             virtualMouse.CopyState<MouseState>(out var mouseState);
             mouseState.WithButton(MouseButton.Left, aButtonIsPressed);
             InputState.Change(virtualMouse, mouseState);
             previousMouseState = aButtonIsPressed;
-            AudioManager.Instance.PlaySFX("ClicarBotao"); //Aciona o aúdio SFX vinculado ao objeto de aúdio sfx nomeado 'ClicarBotao'
+
+            if (aButtonIsPressed && Time.time >= lastButtonPressTime + buttonPressCooldown)
+            {
+                lastButtonPressTime = Time.time;
+                AudioManager.Instance.PlaySFX("ClicarBotao"); //Aciona o aúdio SFX vinculado ao objeto de aúdio sfx nomeado 'ClicarBotao'
+            }
+            //AudioManager.Instance.PlaySFX("ClicarBotao"); //Aciona o aúdio SFX vinculado ao objeto de aúdio sfx nomeado 'ClicarBotao'
         }
 
         AnchorCursor(newPosition);
     }
-
-    
 }
