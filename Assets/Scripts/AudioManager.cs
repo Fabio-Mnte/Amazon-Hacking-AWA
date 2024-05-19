@@ -20,6 +20,11 @@ public class AudioManager : MonoBehaviour
     }
 
     public void Start() {
+        int levelSelected = MainManager.Instance.levelSelected;
+        Debug.Log($"{levelSelected} level selected");
+        /*if(levelSelected == 1){
+        PlayMusic("cena2"); //Caso ache uma música com este nome, ela começa a tocar assim que o jogo carregar.
+        }*/
         PlayMusic("Tema"); //Caso ache uma música com este nome, ela começa a tocar assim que o jogo carregar.
     }
 
@@ -30,7 +35,9 @@ public class AudioManager : MonoBehaviour
         if (mySound == null) {
             Debug.Log("Som não encontrado!");
         } else {
+            
             musicSource.clip = mySound.clip;
+            musicSource.volume = 0.25f;
             musicSource.Play();
         }
         //Caso a música esteja no músicSounds (do tipo Sounds[] que pode ser acessado diretamente pela Unity), ela começará a tocar. 
