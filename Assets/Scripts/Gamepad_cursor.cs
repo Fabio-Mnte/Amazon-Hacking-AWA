@@ -1,6 +1,7 @@
-using System.Collections.Generic; // Certifique-se de incluir esta linha
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.InputSystem.Users;
 
@@ -26,6 +27,9 @@ public class MultiPlayerCursorController : MonoBehaviour
     private float cursorSpeed = 1000f;
 
     [SerializeField]
+    private RectTransform cursorPrefab; // Prefab do cursor
+
+    [SerializeField]
     private RectTransform canvasRectTransform;
 
     // Variáveis de cooldown
@@ -34,67 +38,111 @@ public class MultiPlayerCursorController : MonoBehaviour
 
     private Camera mainCamera;
 
-    private void AnchorCursor(RectTransform cursorTransform, Vector2 position)
+    private void Awake()
     {
-        Vector2 anchoredPosition;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            canvasRectTransform,
-            position,
-            canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : mainCamera,
-            out anchoredPosition
-        );
-        cursorTransform.anchoredPosition = anchoredPosition;
+        mainCamera = Camera.main;
+
+        // Adiciona cursores para todos os controles já conectados
+        foreach (var playerInput in PlayerInput.all)
+        {
+            OnPlayerJoined(playerInput);
+        }
+
+        // Inscreve-se para eventos de conexão e desconexão de dispositivos
+        InputSystem.onDeviceChange += OnDeviceChange;
+    }
+
+    private void OnDestroy()
+    {
+        // Remove a inscrição dos eventos de conexão e desconexão de dispositivos
+        InputSystem.onDeviceChange -= OnDeviceChange;
+    }
+
+    private void OnDeviceChange(InputDevice device, InputDeviceChange change)
+    {
+        // Se um novo controle foi conectado, adiciona um novo cursor
+        if (change == InputDeviceChange.Added)
+        {
+            foreach (var playerCursor in playerCursors)
+            {
+                foreach (var deviceInPlayerInput in playerCursor.playerInput.devices)
+                {
+                    if (deviceInPlayerInput == device)
+                    {
+                        OnPlayerJoined(playerCursor.playerInput);
+                        return;
+                    }
+                }
+            }
+        }
+        // Se um controle foi removido, remove o cursor correspondente
+        else if (change == InputDeviceChange.Removed)
+        {
+            for (int i = 0; i < playerCursors.Count; i++)
+            {
+                foreach (var deviceInPlayerInput in playerCursors[i].playerInput.devices)
+                {
+                    if (deviceInPlayerInput == device)
+                    {
+                        OnPlayerLeft(playerCursors[i]);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+   private void OnPlayerJoined(PlayerInput playerInput)
+{
+    // Instancia um novo cursor
+    RectTransform newCursor = Instantiate(cursorPrefab, canvas.transform);
+
+    // Adiciona um novo PlayerCursor à lista
+    PlayerCursor newPlayerCursor = new PlayerCursor();
+    newPlayerCursor.playerInput = playerInput;
+    newPlayerCursor.cursorTransform = newCursor;
+
+    // Cria um mouse virtual e faz a associação com o PlayerInput
+    newPlayerCursor.virtualMouse = (Mouse)InputSystem.AddDevice("VirtualMouse");
+    InputUser.PerformPairingWithDevice(newPlayerCursor.virtualMouse, playerInput.user);
+
+    // Adiciona o novo PlayerCursor à lista de cursores de jogador
+    playerCursors.Add(newPlayerCursor);
+}
+
+
+        private void OnPlayerLeft(PlayerCursor playerCursor)
+    {
+        // Remove o cursor da hierarquia
+        Destroy(playerCursor.cursorTransform.gameObject);
+
+        // Remove o mouse virtual associado ao controle
+        InputSystem.RemoveDevice(playerCursor.virtualMouse);
+
+        // Remove o PlayerCursor da lista
+        playerCursors.Remove(playerCursor);
     }
 
     private void OnEnable()
     {
-        mainCamera = Camera.main;
-
-        foreach (var playerCursor in playerCursors)
-        {
-            if (playerCursor.virtualMouse == null)
-            {
-                playerCursor.virtualMouse = (Mouse)InputSystem.AddDevice("VirtualMouse");
-            }
-            else if (!playerCursor.virtualMouse.added)
-            {
-                InputSystem.AddDevice(playerCursor.virtualMouse);
-            }
-
-            InputUser.PerformPairingWithDevice(playerCursor.virtualMouse, playerCursor.playerInput.user);
-
-            if (playerCursor.cursorTransform != null)
-            {
-                Vector2 position = playerCursor.cursorTransform.anchoredPosition;
-                InputState.Change(playerCursor.virtualMouse.position, position);
-            }
-        }
-
         InputSystem.onAfterUpdate += UpdateMotion;
     }
 
     private void OnDisable()
     {
-        foreach (var playerCursor in playerCursors)
-        {
-            InputSystem.RemoveDevice(playerCursor.virtualMouse);
-        }
         InputSystem.onAfterUpdate -= UpdateMotion;
     }
 
     private void UpdateMotion()
     {
-        for (int i = 0; i < playerCursors.Count; i++)
+        foreach (var playerCursor in playerCursors)
         {
-            var playerCursor = playerCursors[i];
-
-            // Verifique se há gamepads suficientes
-            if (Gamepad.all.Count <= i)
+            if (Gamepad.all.Count <= playerCursors.IndexOf(playerCursor))
             {
-                continue; // Pule este loop se não houver gamepad correspondente
+                continue;
             }
 
-            var gamepad = Gamepad.all[i];
+            var gamepad = Gamepad.all[playerCursors.IndexOf(playerCursor)];
 
             float horizontalDelta = gamepad.leftStick.ReadValue().x;
             horizontalDelta *= cursorSpeed * Time.deltaTime;
@@ -118,7 +166,10 @@ public class MultiPlayerCursorController : MonoBehaviour
                 InputState.Change(playerCursor.virtualMouse, mouseState);
                 playerCursor.previousMouseState = aButtonIsPressed;
 
-                if (aButtonIsPressed && Time.time >= playerCursor.lastButtonPressTime + buttonPressCooldown)
+                if (
+                    aButtonIsPressed
+                    && Time.time >= playerCursor.lastButtonPressTime + buttonPressCooldown
+                )
                 {
                     playerCursor.lastButtonPressTime = Time.time;
                     // AudioManager.Instance.PlaySFX("ClicarBotao"); //Aciona o aúdio SFX vinculado ao objeto de aúdio sfx nomeado 'ClicarBotao'
@@ -127,5 +178,17 @@ public class MultiPlayerCursorController : MonoBehaviour
 
             AnchorCursor(playerCursor.cursorTransform, newPosition);
         }
+    }
+
+    private void AnchorCursor(RectTransform cursorTransform, Vector2 position)
+    {
+        Vector2 anchoredPosition;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            canvasRectTransform,
+            position,
+            canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : mainCamera,
+            out anchoredPosition
+        );
+        cursorTransform.anchoredPosition = anchoredPosition;
     }
 }
