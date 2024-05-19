@@ -77,7 +77,7 @@ public class Add_questao : MonoBehaviour
         }
     }
 
-    // Método para abrir a conexão com o banco de dados
+    // Método usado para abrir a conexão com o banco de dados
     private void OpenConnection()
     {
         Debug.Log($"{urlDataBase}");
