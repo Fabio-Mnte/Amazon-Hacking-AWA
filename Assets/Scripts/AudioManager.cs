@@ -37,7 +37,7 @@ public class AudioManager : MonoBehaviour
         } else {
             
             musicSource.clip = mySound.clip;
-            musicSource.volume = 0.25f;
+            musicSource.volume = 0.10f;
             musicSource.Play();
         }
         //Caso a música esteja no músicSounds (do tipo Sounds[] que pode ser acessado diretamente pela Unity), ela começará a tocar. 
@@ -51,6 +51,7 @@ public class AudioManager : MonoBehaviour
         if (mySound == null) {
             Debug.Log("Som não encontrado!");
         } else {
+            sfxSource.volume = 0.25f;
             sfxSource.PlayOneShot(mySound.clip);
         }
         //A mesma lógica do PlayMusic() é aplicada aqui, mas para os SFX.

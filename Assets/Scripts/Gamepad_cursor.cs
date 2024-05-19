@@ -108,7 +108,6 @@ public class NewBehaviourScript : MonoBehaviour
                 lastButtonPressTime = Time.time;
                 AudioManager.Instance.PlaySFX("ClicarBotao"); //Aciona o aúdio SFX vinculado ao objeto de aúdio sfx nomeado 'ClicarBotao'
             }
-            //AudioManager.Instance.PlaySFX("ClicarBotao"); //Aciona o aúdio SFX vinculado ao objeto de aúdio sfx nomeado 'ClicarBotao'
         }
 
         AnchorCursor(newPosition);
