@@ -18,13 +18,13 @@ EditorBuildSettings:
     path: Assets/Scenes/Game_1.unity
     guid: d8c0eafc26af3694180a6595a2342c72
   - enabled: 1
-    path: Assets/Scenes/Criador_fases/Editar_fase.unity
-    guid: 5ce2756b553096e42a33a668fcdbef8f
+    path: Assets/Scenes/Criador_fases/Menu_historias.unity
+    guid: 81051bc61b1e52340bdae6c219007d8f
   - enabled: 1
     path: Assets/Scenes/Criador_fases/Editar_historia.unity
     guid: 83ae4885a771f2b41ac9f492d8c014a0
   - enabled: 1
-    path: Assets/Scenes/Criador_fases/Menu_historias.unity
-    guid: 81051bc61b1e52340bdae6c219007d8f
+    path: Assets/Scenes/Criador_fases/Editar_fase.unity
+    guid: acb5dcc9ecd495b45afb67f664666f0e
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 2848a84f8511cad45a9380345d0c168b, type: 2}
