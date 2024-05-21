@@ -1,7 +1,7 @@
 # AwA - uma forma ludica de aprender 
 Um projeto do grupo Murasai
 -------
-Nosso projeto tem como base principal a utilização de modulos didaticos para oferecer a oportunidade aos professores de lecionar de uma forma mais ludica para seus alunos
+Nosso projeto tem como base principal a utilização de modulos didáticos para oferecer a oportunidade aos professores de lecionar de uma forma mais ludica para seus alunos
 
 ------
 # Como funciona?
