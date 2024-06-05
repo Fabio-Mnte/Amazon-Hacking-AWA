@@ -144,7 +144,7 @@ public class LevelLoader : MonoBehaviour
         else
         {
             string texto_historia = FaseContainer
-                .transform.GetChild(selected-1)
+                .transform.GetChild(selected - 1)
                 .GetChild(1)
                 .gameObject.GetComponent<TMP_Text>()
                 .text;
@@ -171,7 +171,8 @@ public class LevelLoader : MonoBehaviour
         }
     }
 
-    public void confirm(){
+    public void confirm()
+    {
         FaseContainer.transform.parent.GetChild(4).gameObject.SetActive(true);
     }
 
@@ -181,13 +182,36 @@ public class LevelLoader : MonoBehaviour
         FaseContainer.transform.parent.GetChild(4).gameObject.SetActive(false);
     }
 
-    private void criarHistoria(){
-        OpenConnection();
-        CloseConnection();
-
+    public void update_historia(){
+        if(MainManager.Instance.levelSelected == 0){
+            criarHistoria();
+        }
     }
-    public void deletarHistoria(){
+    private void criarHistoria()
+    {
         OpenConnection();
+        var command = connection.CreateCommand();
+        string text_historia = FaseContainer
+                .transform.parent.GetChild(3)
+                .GetChild(0)
+                .GetChild(1)
+                .GetChild(0)
+                .GetChild(1)
+                .gameObject.GetComponent<TMP_InputField>()
+                .text;
+        command.CommandText =
+            $"INSERT INTO historia (historia_texto) VALUES ('{text_historia}');";
+        var reader = command.ExecuteReader();
+        CloseConnection();
+    }
+
+    public void deletarHistoria()
+    {
+        OpenConnection();
+        var command = connection.CreateCommand();
+        command.CommandText =
+            $"DELETE FROM historia WHERE historia.historia_id == {historias_id[MainManager.Instance.levelSelected - 1]};";
+        var reader = command.ExecuteReader();
         CloseConnection();
     }
 
