@@ -171,6 +171,10 @@ public class LevelLoader : MonoBehaviour
         }
     }
 
+    public void confirm(){
+        FaseContainer.transform.parent.GetChild(4).gameObject.SetActive(true);
+    }
+
     public void cancelPopup()
     {
         FaseContainer.transform.parent.GetChild(3).gameObject.SetActive(false);
@@ -182,7 +186,7 @@ public class LevelLoader : MonoBehaviour
         CloseConnection();
 
     }
-    private void deletarHistoria(){
+    public void deletarHistoria(){
         OpenConnection();
         CloseConnection();
     }
