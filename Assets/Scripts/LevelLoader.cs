@@ -13,6 +13,7 @@ public class LevelLoader : MonoBehaviour
     private SqliteConnection connection; // Conexão com o banco de dados
     public GameObject FaseContainer; // Container para as fases ou questões
     private int level; // Nível atual
+    private List<int> historias_id = new List<int>();
 
     void Start()
     {
@@ -26,6 +27,21 @@ public class LevelLoader : MonoBehaviour
     private void Load()
     {
         Scene scene = SceneManager.GetActiveScene(); // Obtém a cena atual
+        var command = connection.CreateCommand();
+        command.CommandText = $"SELECT * FROM historia";
+        var reader = command.ExecuteReader(); // Executa a consulta SQL
+        int x = 0;
+        while (reader.Read())
+        {
+            historias_id.Add((int)reader["historia_id"]);
+            level = (int)reader["historia_id"]; // Obtém o ID da história
+            FaseContainer
+                .transform.GetChild(x)
+                .GetChild(1)
+                .gameObject.GetComponent<TMP_Text>()
+                .text = $"{reader["historia_texto"]}"; // Define o texto da história nas UI Texts
+            x++;
+        }
         if (scene.name == "Editar_historia")
         {
             LoadFase(); // Carrega as fases se estiver na cena de edição de história
@@ -35,20 +51,6 @@ public class LevelLoader : MonoBehaviour
         {
             LoadQuest(); // Carrega as questões se estiver na cena de edição de fase
             return;
-        }
-        var command = connection.CreateCommand();
-        command.CommandText = $"SELECT * FROM historia";
-        var reader = command.ExecuteReader(); // Executa a consulta SQL
-        int x = 0;
-        while (reader.Read())
-        {
-            level = (int)reader["historia_id"]; // Obtém o ID da história
-            FaseContainer
-                .transform.GetChild(x)
-                .GetChild(1)
-                .gameObject.GetComponent<TMP_Text>()
-                .text = $"{reader["historia_texto"]}"; // Define o texto da história nas UI Texts
-            x++;
         }
         while (x < 6)
         {
@@ -60,9 +62,10 @@ public class LevelLoader : MonoBehaviour
 
     private void LoadFase()
     {
+        int historia_num = MainManager.Instance.levelSelected;
         var command = connection.CreateCommand();
         command.CommandText =
-            $"SELECT fase_id, fase_texto FROM historia h JOIN fase f ON h.historia_id == f.historia_id";
+            $"SELECT fase_id, fase_texto FROM historia h JOIN fase f ON h.historia_id == f.historia_id AND h.historia_id == {historias_id[historia_num - 1]}";
         var reader = command.ExecuteReader();
         int x = 0;
         while (reader.Read())
@@ -98,8 +101,7 @@ public class LevelLoader : MonoBehaviour
                 .GetChild(1)
                 .gameObject.GetComponent<TMP_Text>()
                 .text = $"{reader["questao_texto"]}"; // Define o texto da questão nas UI Texts
-            
-            
+
             //LoadButtons(x);
             x++;
         }
@@ -112,28 +114,101 @@ public class LevelLoader : MonoBehaviour
         }
     }
 
-/*
-    private void LoadButtons(int x)
+    public void popup()
     {
-        
-        FaseContainer
-            .transform.GetChild(x)
-            .gameObject.GetComponent<Button>()
-            .onClick.AddListener(customOnclick);
+        FaseContainer.transform.parent.GetChild(3).gameObject.SetActive(true);
+        int selected = MainManager.Instance.levelSelected;
+        if (selected == 0)
+        {
+            FaseContainer
+                .transform.parent.GetChild(3)
+                .GetChild(0)
+                .GetChild(1)
+                .GetChild(0)
+                .GetChild(1)
+                .gameObject.GetComponent<TMP_InputField>()
+                .text = "";
+            FaseContainer
+                .transform.parent.GetChild(3)
+                .GetChild(0)
+                .GetChild(1)
+                .GetChild(2)
+                .gameObject.SetActive(false);
+            FaseContainer
+                .transform.parent.GetChild(3)
+                .GetChild(0)
+                .GetChild(1)
+                .GetChild(3)
+                .gameObject.SetActive(false);
+        }
+        else
+        {
+            string texto_historia = FaseContainer
+                .transform.GetChild(selected-1)
+                .GetChild(1)
+                .gameObject.GetComponent<TMP_Text>()
+                .text;
+            FaseContainer
+                .transform.parent.GetChild(3)
+                .GetChild(0)
+                .GetChild(1)
+                .GetChild(0)
+                .GetChild(1)
+                .gameObject.GetComponent<TMP_InputField>()
+                .text = texto_historia;
+            FaseContainer
+                .transform.parent.GetChild(3)
+                .GetChild(0)
+                .GetChild(1)
+                .GetChild(2)
+                .gameObject.SetActive(true);
+            FaseContainer
+                .transform.parent.GetChild(3)
+                .GetChild(0)
+                .GetChild(1)
+                .GetChild(3)
+                .gameObject.SetActive(true);
+        }
     }
 
-    private void customOnclick()
+    public void cancelPopup()
     {
-        FaseContainer
-            .transform.parent.parent.parent.gameObject.GetComponent<Add_questao>()
-            .ativarPopup((int) reader["questao_id"]); 
-     
-        FaseContainer
-            .transform.parent.parent.parent.gameObject.GetComponent<Add_questao>()
-            .teste("blip"); 
-        
+        FaseContainer.transform.parent.GetChild(3).gameObject.SetActive(false);
+        FaseContainer.transform.parent.GetChild(4).gameObject.SetActive(false);
     }
-    */
+
+    private void criarHistoria(){
+        OpenConnection();
+        CloseConnection();
+
+    }
+    private void deletarHistoria(){
+        OpenConnection();
+        CloseConnection();
+    }
+
+    /*
+        private void LoadButtons(int x)
+        {
+            
+            FaseContainer
+                .transform.GetChild(x)
+                .gameObject.GetComponent<Button>()
+                .onClick.AddListener(customOnclick);
+        }
+    
+        private void customOnclick()
+        {
+            FaseContainer
+                .transform.parent.parent.parent.gameObject.GetComponent<Add_questao>()
+                .ativarPopup((int) reader["questao_id"]);
+         
+            FaseContainer
+                .transform.parent.parent.parent.gameObject.GetComponent<Add_questao>()
+                .teste("blip");
+            
+        }
+        */
 
     private void OpenConnection()
     {
