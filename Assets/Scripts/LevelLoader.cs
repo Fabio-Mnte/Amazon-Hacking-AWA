@@ -210,8 +210,12 @@ public class LevelLoader : MonoBehaviour
         OpenConnection();
         var command = connection.CreateCommand();
         command.CommandText =
+        "PRAGMA foreign_keys =ON";
+        command.ExecuteReader();
+        
+        command.CommandText =
             $"DELETE FROM historia WHERE historia.historia_id == {historias_id[MainManager.Instance.levelSelected - 1]};";
-        var reader = command.ExecuteReader();
+        command.ExecuteReader();
         CloseConnection();
     }
 
