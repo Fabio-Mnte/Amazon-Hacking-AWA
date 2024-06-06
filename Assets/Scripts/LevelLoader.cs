@@ -13,6 +13,7 @@ public class LevelLoader : MonoBehaviour
     private SqliteConnection connection; // Conexão com o banco de dados
     public GameObject FaseContainer; // Container para as fases ou questões
     private int level; // Nível atual
+    private List<int> fases_id = new List<int>();
     private List<int> historias_id = new List<int>();
 
     void Start()
@@ -70,6 +71,7 @@ public class LevelLoader : MonoBehaviour
         int x = 0;
         while (reader.Read())
         {
+            fases_id.Add((int)reader["fase_id"]);
             level = (int)reader["fase_id"]; // Obtém o ID da fase
             FaseContainer
                 .transform.GetChild(x)
@@ -116,8 +118,14 @@ public class LevelLoader : MonoBehaviour
 
     public void popup()
     {
+        Scene scene = SceneManager.GetActiveScene();
         FaseContainer.transform.parent.GetChild(3).gameObject.SetActive(true);
-        int selected = MainManager.Instance.levelSelected;
+        int selected = 0;
+        if(scene.name == "Menu_historias"){
+            selected = MainManager.Instance.levelSelected;
+        } else if( scene.name == "Editar_historia"){
+            selected = MainManager.Instance.faseSelected;
+        }
         if (selected == 0)
         {
             FaseContainer
@@ -182,9 +190,19 @@ public class LevelLoader : MonoBehaviour
         FaseContainer.transform.parent.GetChild(4).gameObject.SetActive(false);
     }
 
-    public void update_historia(){
-        if(MainManager.Instance.levelSelected == 0){
+    public void update_data(){
+        Scene scene = SceneManager.GetActiveScene();
+        int selected = 0;
+        if(scene.name == "Menu_historias"){
+            selected = MainManager.Instance.levelSelected;
+        } else if( scene.name == "Editar_historia"){
+            selected = MainManager.Instance.faseSelected;
+        }
+
+        if(selected == 0 && scene.name == "Menu_historias"){
             criarHistoria();
+        } else{
+            criarFase();
         }
     }
     private void criarHistoria()
@@ -205,6 +223,20 @@ public class LevelLoader : MonoBehaviour
         CloseConnection();
     }
 
+    private void criarFase(){
+        var command = connection.CreateCommand();
+        string text_historia = FaseContainer
+                .transform.parent.GetChild(3)
+                .GetChild(0)
+                .GetChild(1)
+                .GetChild(0)
+                .GetChild(1)
+                .gameObject.GetComponent<TMP_InputField>()
+                .text;
+        //command.CommandText =
+
+    }
+
     public void deletarHistoria()
     {
         OpenConnection();
@@ -212,11 +244,25 @@ public class LevelLoader : MonoBehaviour
         command.CommandText =
         "PRAGMA foreign_keys =ON";
         command.ExecuteReader();
-        
+
         command.CommandText =
             $"DELETE FROM historia WHERE historia.historia_id == {historias_id[MainManager.Instance.levelSelected - 1]};";
         command.ExecuteReader();
         CloseConnection();
+    }
+
+    public void deletarFase(){
+        OpenConnection();
+        var command = connection.CreateCommand();
+        command.CommandText =
+        "PRAGMA foreign_keys =ON";
+        command.ExecuteReader();
+
+        command.CommandText =
+            $"DELETE FROM fase WHERE fase.fase_id == {fases_id[MainManager.Instance.faseSelected - 1]};";
+        command.ExecuteReader();
+        CloseConnection();
+
     }
 
     /*
